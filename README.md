@@ -249,11 +249,10 @@ redirect a dashboard.html
 
 ---
 
-## 📝 Note per la Presentazione
+## 📝 Questo progetto dimostra la conoscenza di:
 
-Questo progetto dimostra la conoscenza di:
 - Full-stack development con tecnologie web standard
-- Sicurezza applicativa (OWASP Top 10)
+- Sicurezza applicativa
 - UX/UI design responsive e accessibile
 - Architettura client-server con API
 - Gestione database relazionale
