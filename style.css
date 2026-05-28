@@ -1,0 +1,1674 @@
+/* ============================================================
+   style.css — TaskFlow: To-Do List App
+
+   1. CSS CUSTOM PROPERTIES (VARIABILI) — TEMA LIGHT (default)
+   ============================================================ */
+:root {
+    /* Colori principali */
+    --bg-page:        #f0ede8;
+    --bg-card:        #ffffff;
+    --bg-card-hover:  #fafaf8;
+    --bg-input:       #f5f3ef;
+    --bg-header:      rgba(255,255,255,0.9);
+
+    /* Colori testo */
+    --text-primary:   #1a1a1a;
+    --text-secondary: #6b6560;
+    --text-muted:     #a8a29c;
+    --text-inverse:   #ffffff;
+
+    /* Colore accento */
+    --accent:         #c8f135;
+    --accent-dark:    #a8d010;
+    --accent-text:    #1a1a1a;
+
+    /* Colori semantici */
+    --success:        #22c55e;
+    --danger:         #ef4444;
+    --warning:        #f59e0b;
+    --info:           #3b82f6;
+
+    /* Bordi e ombre */
+    --border:         #e2ddd8;
+    --border-focus:   var(--accent);
+    --shadow-sm:      0 1px 3px rgba(0,0,0,0.08);
+    --shadow-md:      0 4px 16px rgba(0,0,0,0.10);
+    --shadow-lg:      0 8px 32px rgba(0,0,0,0.12);
+    --shadow-card:    0 2px 8px rgba(0,0,0,0.06);
+
+    /* Tipografia */
+    --font-display:   'Syne', sans-serif;
+    --font-body:      'DM Sans', sans-serif;
+
+    /* Transizioni */
+    --transition:     0.2s ease;
+    --transition-slow:0.35s ease;
+
+    /* Sfere decorative */
+    --orb-1: rgba(200, 241, 53, 0.35);
+    --orb-2: rgba(255, 160, 80, 0.20);
+    --orb-3: rgba(100, 180, 255, 0.18);
+
+    /* Bordi raggio */
+    --radius-sm:  6px;
+    --radius-md:  12px;
+    --radius-lg:  20px;
+    --radius-xl:  28px;
+}
+
+/* ============================================================
+   2. TEMA DARK — attivato aggiungendo .dark a <body>
+   ============================================================ */
+body.dark {
+    --bg-page:        #111110;
+    --bg-card:        #1c1c1a;
+    --bg-card-hover:  #242422;
+    --bg-input:       #252523;
+    --bg-header:      rgba(17,17,16,0.92);
+
+    --text-primary:   #f0ede8;
+    --text-secondary: #a8a29c;
+    --text-muted:     #6b6560;
+
+    --border:         #2e2d2b;
+    --shadow-sm:      0 1px 3px rgba(0,0,0,0.3);
+    --shadow-md:      0 4px 16px rgba(0,0,0,0.4);
+    --shadow-lg:      0 8px 32px rgba(0,0,0,0.5);
+    --shadow-card:    0 2px 8px rgba(0,0,0,0.3);
+
+    --orb-1: rgba(200, 241, 53, 0.12);
+    --orb-2: rgba(255, 160, 80, 0.08);
+    --orb-3: rgba(100, 180, 255, 0.08);
+}
+
+/* ============================================================
+   3. RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    min-height: 100vh;
+    transition: background-color var(--transition-slow), color var(--transition-slow);
+    line-height: 1.6;
+}
+
+button {
+    font-family: var(--font-body);
+    cursor: pointer;
+    border: none;
+    background: none;
+}
+
+input {
+    font-family: var(--font-body);
+}
+
+ul { list-style: none; }
+
+.hidden { display: none !important; }
+.flex-1 { flex: 1; }
+
+/* ============================================================
+   4. SFONDO DECORATIVO (sfere animate)
+   ============================================================ */
+.bg-decoration {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+}
+
+.orb-1 {
+    width: 500px; height: 500px;
+    background: var(--orb-1);
+    top: -150px; right: -100px;
+    animation: orbFloat 12s ease-in-out infinite;
+}
+
+.orb-2 {
+    width: 350px; height: 350px;
+    background: var(--orb-2);
+    bottom: -100px; left: -80px;
+    animation: orbFloat 16s ease-in-out infinite reverse;
+}
+
+.orb-3 {
+    width: 250px; height: 250px;
+    background: var(--orb-3);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation: orbFloat 20s ease-in-out infinite 4s;
+}
+
+@keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33%       { transform: translate(30px, -20px) scale(1.05); }
+    66%       { transform: translate(-20px, 15px) scale(0.97); }
+}
+
+/* ============================================================
+   5. TOGGLE TEMA
+   ============================================================ */
+.theme-toggle {
+    position: fixed;
+    top: 20px; right: 20px;
+    z-index: 100;
+    width: 44px; height: 44px;
+    border-radius: 50%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: var(--shadow-lg);
+}
+
+.theme-toggle-inline {
+    position: static;
+    width: 36px; height: 36px;
+    font-size: 1rem;
+}
+
+/* ============================================================
+   6. PAGINA AUTH (index.html)
+   ============================================================ */
+.auth-page {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+.auth-container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    /* Animazione entrata pagina */
+    animation: fadeSlideUp 0.5s ease both;
+}
+
+@keyframes fadeSlideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Brand / Logo */
+.auth-brand {
+    text-align: center;
+}
+
+.brand-icon {
+    width: 72px; height: 72px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border-radius: var(--radius-lg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 900;
+    margin-bottom: 12px;
+    box-shadow: 0 8px 24px rgba(200,241,53,0.35);
+    animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
+}
+
+@keyframes bounceIn {
+    from { opacity: 0; transform: scale(0.5); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+.brand-title {
+    font-family: var(--font-display);
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    line-height: 1;
+}
+
+.brand-subtitle {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    margin-top: 6px;
+    letter-spacing: 0.02em;
+}
+
+/* Card auth */
+.auth-card {
+    width: 100%;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    transition: background var(--transition-slow), border-color var(--transition-slow);
+}
+
+/* Tab di navigazione */
+.auth-tabs {
+    display: flex;
+    position: relative;
+    background: var(--bg-input);
+    border-bottom: 1px solid var(--border);
+}
+
+.auth-tab {
+    flex: 1;
+    padding: 16px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color var(--transition);
+    position: relative;
+    z-index: 1;
+}
+
+.auth-tab.active {
+    color: var(--text-primary);
+    font-weight: 700;
+}
+
+.auth-tab:hover:not(.active) {
+    color: var(--text-primary);
+}
+
+/* Indicatore tab animato */
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 2px;
+    width: 50%;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+    transition: left var(--transition);
+}
+
+.tab-indicator.right { left: 50%; }
+
+/* Pannelli contenuto tab */
+.auth-panel {
+    display: none;
+    padding: 32px;
+    animation: panelFade 0.25s ease;
+}
+
+.auth-panel.active {
+    display: block;
+}
+
+@keyframes panelFade {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.panel-title {
+    font-family: var(--font-display);
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 6px;
+}
+
+.panel-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+}
+
+.auth-footer {
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+/* ============================================================
+   7. FORM COMPONENTS
+   ============================================================ */
+.form-group {
+    margin-bottom: 18px;
+}
+
+.form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    letter-spacing: 0.01em;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    font-size: 1rem;
+    pointer-events: none;
+    z-index: 1;
+    line-height: 1;
+}
+
+.form-input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    transition: border-color var(--transition), box-shadow var(--transition),
+                background var(--transition-slow);
+    outline: none;
+}
+
+.form-input::placeholder { color: var(--text-muted); }
+
+.form-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(200,241,53,0.2);
+    background: var(--bg-card);
+}
+
+.form-input:not(:placeholder-shown):valid {
+    border-color: var(--success);
+}
+
+.form-input.error {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239,68,68,0.15);
+}
+
+/* Bottone mostra/nascondi password */
+.toggle-password {
+    position: absolute;
+    right: 12px;
+    font-size: 1rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: opacity var(--transition);
+    z-index: 1;
+}
+.toggle-password:hover { opacity: 0.7; }
+
+/* Messaggi di errore campo */
+.field-error {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--danger);
+    margin-top: 4px;
+    min-height: 18px;
+    transition: opacity var(--transition);
+}
+
+/* Contatore caratteri */
+.char-count {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+    text-align: right;
+}
+
+/* ============================================================
+   8. INDICATORE FORZA PASSWORD
+   ============================================================ */
+.password-strength {
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.strength-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+}
+
+.strength-bar::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: 4px;
+    transition: width 0.4s ease, background 0.4s ease;
+    width: var(--strength-width, 0%);
+    background: var(--strength-color, var(--border));
+}
+
+.strength-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--strength-color, var(--text-muted));
+    min-width: 60px;
+}
+
+/* ============================================================
+   9. ALERT / NOTIFICHE IN FORM
+   ============================================================ */
+.alert {
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    display: none; /* Mostrato da JS */
+    animation: alertSlide 0.3s ease;
+}
+
+@keyframes alertSlide {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.alert.success {
+    background: rgba(34,197,94,0.12);
+    color: #16a34a;
+    border: 1px solid rgba(34,197,94,0.3);
+    display: block;
+}
+
+.alert.error {
+    background: rgba(239,68,68,0.1);
+    color: #dc2626;
+    border: 1px solid rgba(239,68,68,0.25);
+    display: block;
+}
+
+body.dark .alert.success { color: #4ade80; }
+body.dark .alert.error   { color: #f87171; }
+
+/* ============================================================
+   10. BOTTONI
+   ============================================================ */
+.btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    transition: transform var(--transition), box-shadow var(--transition),
+                background var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 8px;
+    box-shadow: 0 4px 14px rgba(200,241,53,0.3);
+}
+
+.btn-primary:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(200,241,53,0.4);
+    background: var(--accent-dark);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Loader spinner dentro il bottone */
+.btn-loader {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(26,26,26,0.3);
+    border-top-color: var(--accent-text);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+}
+
+.btn-primary.loading .btn-text { display: none; }
+.btn-primary.loading .btn-loader { display: block; }
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ── Separatore "oppure" ── */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 16px 0;
+    color: var(--text-secondary, #888);
+    font-size: 0.82rem;
+}
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border, #e0e0e0);
+}
+
+/* ── Pulsante "Accedi con Google" ── */
+.btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 11px 16px;
+    border-radius: 10px;
+    border: 1.5px solid var(--border, #dadce0);
+    background: var(--surface, #fff);
+    color: var(--text-primary, #3c4043);
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-family: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.18s, box-shadow 0.18s, border-color 0.18s;
+    box-sizing: border-box;
+}
+.btn-google:hover {
+    background: var(--surface-hover, #f8f9fa);
+    box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+    border-color: #bbb;
+}
+.btn-google:active {
+    box-shadow: none;
+    background: var(--surface-active, #f1f3f4);
+}
+.google-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+/* Adattamento dark mode */
+body.dark .btn-google {
+    background: #2d2d2d;
+    border-color: #555;
+    color: #e0e0e0;
+}
+body.dark .btn-google:hover {
+    background: #3a3a3a;
+    border-color: #777;
+}
+body.dark .auth-divider {
+    color: #666;
+}
+body.dark .auth-divider::before,
+body.dark .auth-divider::after {
+    background: #444;
+}
+
+.btn-ghost {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--text-secondary);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-ghost:hover {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--text-muted);
+}
+
+.btn-ghost.small {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+}
+
+.btn-danger {
+    padding: 10px 20px;
+    background: var(--danger);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-danger:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Bottone aggiungi task (cerchio con +) */
+.btn-add {
+    width: 52px;
+    height: 52px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border: none;
+    border-radius: var(--radius-md);
+    font-size: 1.6rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all var(--transition);
+    box-shadow: 0 4px 12px rgba(200,241,53,0.3);
+    line-height: 1;
+}
+
+.btn-add:hover {
+    background: var(--accent-dark);
+    transform: scale(1.05) rotate(5deg);
+    box-shadow: 0 6px 18px rgba(200,241,53,0.4);
+}
+
+.btn-add:active {
+    transform: scale(0.96);
+}
+
+/* ============================================================
+   11. HEADER DASHBOARD
+   ============================================================ */
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-header);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition-slow), border-color var(--transition-slow);
+}
+
+.header-inner {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.brand-icon-small {
+    width: 32px; height: 32px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    font-weight: 900;
+}
+
+.header-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+/* Badge statistiche nell'header */
+.stat-badge {
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.stat-num {
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* Menu utente */
+.user-menu { position: relative; }
+
+.user-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px 6px 6px;
+    background: var(--bg-input);
+    border: 1px solid var(--border);
+    border-radius: 30px;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.user-btn:hover {
+    background: var(--bg-card);
+    border-color: var(--accent);
+}
+
+.user-avatar {
+    width: 28px; height: 28px;
+    background: var(--accent);
+    color: var(--accent-text);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    font-family: var(--font-display);
+}
+
+.user-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    max-width: 100px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-chevron {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    transition: transform var(--transition);
+}
+
+.user-btn[aria-expanded="true"] .user-chevron {
+    transform: rotate(180deg);
+}
+
+.user-dropdown {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    min-width: 180px;
+    padding: 8px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-8px);
+    transition: all var(--transition);
+    z-index: 100;
+}
+
+.user-dropdown.open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdown-info {
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.dropdown-username {
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.dropdown-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+}
+
+.dropdown-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 4px 0;
+}
+
+.dropdown-item {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-align: left;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: none;
+    border: none;
+}
+
+.dropdown-item:hover { background: var(--bg-input); color: var(--text-primary); }
+.dropdown-item.danger:hover { background: rgba(239,68,68,0.1); color: var(--danger); }
+
+/* ============================================================
+   12. CONTENUTO PRINCIPALE DASHBOARD
+   ============================================================ */
+.app-main {
+    padding: 32px 24px 80px;
+    position: relative;
+    z-index: 1;
+}
+
+.dashboard-container {
+    max-width: 800px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ============================================================
+   13. SEZIONE AGGIUNGI TASK
+   ============================================================ */
+.add-task-section { }
+
+.add-task-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    transition: background var(--transition-slow), border-color var(--transition-slow);
+}
+
+.section-title {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    letter-spacing: 0.01em;
+    margin-bottom: 14px;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+}
+
+.add-task-row {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+/* Contatore caratteri inline nell'input task */
+.char-count-inline {
+    position: absolute;
+    right: 60px;
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    pointer-events: none;
+}
+
+.char-count-inline.warning { color: var(--warning); }
+
+/* ============================================================
+   14. SEZIONE STATISTICHE
+   ============================================================ */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 18px 16px;
+    text-align: center;
+    transition: all var(--transition);
+    box-shadow: var(--shadow-card);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.stat-card.highlight { border-color: rgba(200,241,53,0.5); }
+.stat-card.success   { border-color: rgba(34,197,94,0.4); }
+
+.stat-number {
+    font-family: var(--font-display);
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.stat-name {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+}
+
+/* Card progresso */
+.progress-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 8px;
+}
+
+.progress-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-weight: 500;
+}
+
+.progress-bar-container {
+    height: 6px;
+    background: var(--bg-input);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), #a0c020);
+    border-radius: 6px;
+    transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    width: 0%;
+}
+
+.progress-percent {
+    font-family: var(--font-display);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+/* ============================================================
+   15. SEZIONE FILTRI
+   ============================================================ */
+.filters-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 4px;
+    background: var(--bg-input);
+    border-radius: var(--radius-md);
+    padding: 4px;
+    border: 1px solid var(--border);
+}
+
+.filter-btn {
+    padding: 6px 16px;
+    border-radius: calc(var(--radius-md) - 2px);
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition);
+    white-space: nowrap;
+}
+
+.filter-btn:hover { color: var(--text-primary); }
+
+.filter-btn.active {
+    background: var(--bg-card);
+    color: var(--text-primary);
+    font-weight: 700;
+    box-shadow: var(--shadow-sm);
+}
+
+.search-row {
+    margin-top: 12px;
+}
+
+.search-input { padding-left: 42px; }
+
+/* ============================================================
+   16. LISTA TASK
+   ============================================================ */
+.task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+/* Singolo task */
+.task-item {
+    background: var(--bg-card);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: var(--shadow-card);
+    transition: all var(--transition);
+    animation: taskSlideIn 0.3s ease both;
+    cursor: default;
+    user-select: none;
+}
+
+.task-item:hover {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(200,241,53,0.4);
+    transform: translateY(-1px);
+}
+
+.task-item.completed {
+    opacity: 0.6;
+    border-color: var(--border);
+}
+
+.task-item.completed:hover {
+    opacity: 0.8;
+}
+
+/* Animazione entrata task */
+@keyframes taskSlideIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+/* Animazione uscita task (aggiunta da JS prima di rimuovere) */
+.task-item.removing {
+    animation: taskSlideOut 0.25s ease forwards;
+}
+
+@keyframes taskSlideOut {
+    to { opacity: 0; transform: translateX(12px) scale(0.95); }
+}
+
+/* Handle drag-and-drop */
+.drag-handle {
+    color: var(--text-muted);
+    cursor: grab;
+    font-size: 1rem;
+    padding: 4px;
+    border-radius: 4px;
+    transition: color var(--transition);
+    flex-shrink: 0;
+}
+
+.drag-handle:hover { color: var(--text-secondary); }
+.drag-handle:active { cursor: grabbing; }
+
+/* Stato durante il trascinamento */
+.task-item.dragging {
+    opacity: 0.4;
+    border-style: dashed;
+}
+
+.task-item.drag-over {
+    border-color: var(--accent);
+    background: rgba(200,241,53,0.06);
+    transform: scale(1.01);
+}
+
+/* Checkbox personalizzata */
+.task-checkbox {
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+    border: 2px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all var(--transition);
+    background: var(--bg-input);
+    font-size: 0.8rem;
+}
+
+.task-checkbox:hover {
+    border-color: var(--accent);
+    background: rgba(200,241,53,0.1);
+}
+
+.task-item.completed .task-checkbox {
+    background: var(--success);
+    border-color: var(--success);
+    color: white;
+}
+
+/* Testo del task */
+.task-text {
+    flex: 1;
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    word-break: break-word;
+    transition: color var(--transition);
+}
+
+.task-item.completed .task-text {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* Campo edit inline */
+.task-edit-input {
+    flex: 1;
+    padding: 4px 8px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--accent);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    font-family: var(--font-body);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(200,241,53,0.2);
+}
+
+/* Azioni task (edit/delete) */
+.task-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+    opacity: 0;
+    transition: opacity var(--transition);
+}
+
+.task-item:hover .task-actions,
+.task-item:focus-within .task-actions {
+    opacity: 1;
+}
+
+.task-action-btn {
+    width: 32px; height: 32px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    cursor: pointer;
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--text-muted);
+    transition: all var(--transition);
+}
+
+.task-action-btn:hover {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+.task-action-btn.save-btn:hover {
+    background: rgba(34,197,94,0.1);
+    color: var(--success);
+    border-color: rgba(34,197,94,0.3);
+}
+
+.task-action-btn.delete-btn:hover {
+    background: rgba(239,68,68,0.1);
+    color: var(--danger);
+    border-color: rgba(239,68,68,0.3);
+}
+
+/* Data creazione task */
+.task-date {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    display: none; /* Mostrata solo su schermi grandi */
+}
+
+/* ============================================================
+   17. STATI VUOTO E CARICAMENTO
+   ============================================================ */
+.loading-state {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--text-secondary);
+}
+
+.spinner {
+    width: 36px; height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 24px;
+}
+
+.empty-icon {
+    font-size: 3rem;
+    margin-bottom: 16px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-8px); }
+}
+
+.empty-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.empty-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.dnd-hint {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 12px;
+    letter-spacing: 0.03em;
+}
+
+/* ============================================================
+   18. MODAL
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition);
+}
+
+.modal-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+
+.modal-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    padding: 32px;
+    max-width: 380px;
+    width: 100%;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.9);
+    transition: transform var(--transition);
+}
+
+.modal-overlay.open .modal-card {
+    transform: scale(1);
+}
+
+.modal-icon { font-size: 2.5rem; margin-bottom: 12px; }
+
+.modal-title {
+    font-family: var(--font-display);
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+}
+
+.modal-desc {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    margin-bottom: 24px;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+/* ============================================================
+   19. TOAST NOTIFICHE
+   ============================================================ */
+.toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 300;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 320px;
+}
+
+.toast {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 14px 18px;
+    box-shadow: var(--shadow-lg);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: toastIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    border-left: 3px solid var(--border);
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateX(60px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+.toast.removing {
+    animation: toastOut 0.3s ease forwards;
+}
+
+@keyframes toastOut {
+    to { opacity: 0; transform: translateX(60px); height: 0; padding: 0; margin: 0; }
+}
+
+.toast.success { border-left-color: var(--success); }
+.toast.error   { border-left-color: var(--danger); }
+.toast.info    { border-left-color: var(--accent); }
+
+.toast-icon { font-size: 1.1rem; flex-shrink: 0; }
+.toast-msg  { flex: 1; }
+
+/* ============================================================
+   20. RESPONSIVE
+   ============================================================ */
+@media (max-width: 640px) {
+    /* Header */
+    .header-stats { display: none; }
+    .user-name    { display: none; }
+    .header-inner { padding: 0 16px; }
+
+    /* Contenuto */
+    .app-main { padding: 20px 16px 60px; }
+
+    /* Statistiche */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    /* Task */
+    .task-actions { opacity: 1; } /* Sempre visibili su mobile */
+    .task-date    { display: none; }
+
+    /* Filtri */
+    .filters-row { flex-direction: column; align-items: stretch; }
+    .filter-buttons { justify-content: center; }
+
+    /* Auth */
+    .auth-panel { padding: 24px 20px; }
+    .brand-title { font-size: 2rem; }
+
+    /* Modal */
+    .modal-actions { flex-direction: column; }
+    .modal-actions .btn-ghost,
+    .modal-actions .btn-danger { width: 100%; justify-content: center; }
+}
+
+@media (min-width: 641px) {
+    .task-date { display: block; }
+}
+
+/* Scrollbar personalizzata (webkit) */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* ============================================================
+   21. SCADENZA DATA/ORA (due_datetime)
+   ============================================================ */
+
+/* Riga scadenza sotto il campo testo */
+.due-row {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px dashed var(--border);
+}
+
+.due-input-group { display: flex; flex-direction: column; gap: 8px; }
+
+.due-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.due-label-icon { font-size: 0.9rem; }
+
+.due-optional {
+    font-weight: 400;
+    color: var(--text-muted);
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+/* Contenitore inline data + ora + bottone rimuovi */
+.due-inputs {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.due-date-wrapper { flex: 1; min-width: 140px; }
+.due-time-wrapper { width: 130px; flex-shrink: 0; }
+
+/* Input date e time (rimuove lo stile nativo brutto) */
+.due-input {
+    padding-left: 38px !important;
+    font-size: 0.875rem;
+    color-scheme: light dark; /* Rispetta il tema OS per i picker */
+}
+
+body.dark .due-input {
+    color-scheme: dark;
+}
+
+/* Bottone per svuotare la scadenza */
+.btn-clear-due {
+    width: 32px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: var(--radius-sm);
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition);
+}
+
+.btn-clear-due:hover {
+    background: rgba(239,68,68,0.1);
+    color: var(--danger);
+    border-color: rgba(239,68,68,0.4);
+}
+
+/* ============================================================
+   22. BADGE SCADENZA SUI TASK
+   ============================================================ */
+
+/* Badge contenitore (mostra data/ora sul task) */
+.task-due-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    letter-spacing: 0.01em;
+    transition: all var(--transition);
+    border: 1px solid transparent;
+}
+
+/* Stato normale: scadenza futura */
+.task-due-badge.due-normal {
+    background: rgba(59,130,246,0.1);
+    color: var(--info);
+    border-color: rgba(59,130,246,0.25);
+}
+
+/* Stato "oggi": scade entro oggi */
+.task-due-badge.due-today {
+    background: rgba(245,158,11,0.12);
+    color: var(--warning);
+    border-color: rgba(245,158,11,0.35);
+    animation: pulseBadge 2.5s ease-in-out infinite;
+}
+
+/* Stato "imminente": scade entro 1 ora */
+.task-due-badge.due-soon {
+    background: rgba(245,158,11,0.18);
+    color: #d97706;
+    border-color: rgba(245,158,11,0.5);
+    animation: pulseBadge 1.5s ease-in-out infinite;
+}
+
+/* Stato scaduto: data/ora passata */
+.task-due-badge.due-overdue {
+    background: rgba(239,68,68,0.12);
+    color: var(--danger);
+    border-color: rgba(239,68,68,0.35);
+}
+
+/* Animazione pulsante per task in scadenza */
+@keyframes pulseBadge {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.65; }
+}
+
+/* Bordo task scaduto */
+.task-item.is-overdue {
+    border-color: rgba(239,68,68,0.35);
+}
+
+.task-item.is-overdue:hover {
+    border-color: rgba(239,68,68,0.6);
+}
+
+/* Bordo task in scadenza oggi */
+.task-item.is-today {
+    border-color: rgba(245,158,11,0.4);
+}
+
+/* Task completato: nasconde il badge scadenza (non più rilevante) */
+.task-item.completed .task-due-badge {
+    opacity: 0.35;
+    text-decoration: line-through;
+}
+
+/* ============================================================
+   23. MODAL MODIFICA ALLARGATO
+   ============================================================ */
+.modal-card-wide {
+    max-width: 480px;
+}
+
+/* Adattamento responsive per due_inputs dentro il modal */
+@media (max-width: 480px) {
+    .due-inputs {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .due-time-wrapper { width: 100%; }
+    .btn-clear-due    { width: 100%; height: 36px; }
+}

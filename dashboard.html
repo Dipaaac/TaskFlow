@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow — Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" href="logo.png">
+</head>
+<body id="appBody">
+
+    <!-- =====================================================
+                        HEADER NAVIGAZIONE
+    ====================================================== -->
+    <header class="app-header">
+        <div class="header-inner">
+            <!-- Logo -->
+            <div class="header-brand">
+                <span class="brand-icon-small">✓</span>
+                <span class="header-title">TaskFlow</span>
+            </div>
+
+            <!-- Informazioni utente + azioni -->
+            <div class="header-actions">
+                <!-- Statistiche rapide -->
+                <div class="header-stats">
+                    <span class="stat-badge" id="headerPending" title="Task in sospeso">
+                        <span class="stat-num" id="pendingCount">0</span> in sospeso
+                    </span>
+                </div>
+
+                <!-- Toggle tema -->
+                <button class="theme-toggle theme-toggle-inline" id="themeToggle"
+                        aria-label="Cambia tema">
+                    <span class="theme-icon">☀️</span>
+                </button>
+
+                <!-- Username + menu -->
+                <div class="user-menu" id="userMenu">
+                    <button class="user-btn" id="userBtn" onclick="toggleUserMenu()"
+                            aria-expanded="false" aria-haspopup="true">
+                        <span class="user-avatar" id="userAvatar">?</span>
+                        <span class="user-name" id="headerUsername">...</span>
+                        <span class="user-chevron">▾</span>
+                    </button>
+                    <div class="user-dropdown" id="userDropdown" role="menu">
+                        <div class="dropdown-info">
+                            <span class="dropdown-username" id="dropdownUsername"></span>
+                            <span class="dropdown-label">Account</span>
+                        </div>
+                        <hr class="dropdown-divider">
+                        <button class="dropdown-item danger" onclick="handleLogout()" role="menuitem">
+                            Esci
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- =====================================================
+         CONTENUTO PRINCIPALE
+    ====================================================== -->
+    <main class="app-main">
+        <div class="dashboard-container">
+
+            <!-- ============================================
+                 SEZIONE: AGGIUNGI TASK
+            ============================================= -->
+            <section class="add-task-section" aria-label="Aggiungi task">
+                <div class="add-task-card">
+                    <h2 class="section-title">Cosa devo fare?</h2>
+                    <div class="add-task-row">
+                        <div class="input-wrapper flex-1">
+                            <span class="input-icon">✏️</span>
+                            <input
+                                type="text"
+                                class="form-input"
+                                id="newTaskInput"
+                                placeholder="Scrivi un nuovo task..."
+                                maxlength="500"
+                                aria-label="Testo del nuovo task"
+                            >
+                            <!-- Contatore caratteri -->
+                            <span class="char-count-inline" id="taskCharCount">0/500</span>
+                        </div>
+                        <button class="btn-add" id="addTaskBtn" onclick="handleAddTask()"
+                                aria-label="Aggiungi task">
+                            <span>＋</span>
+                        </button>
+                    </div>
+
+                    <!-- Riga data/ora scadenza (opzionale) -->
+                    <div class="due-row">
+                        <div class="due-input-group">
+                            <label class="due-label" for="newTaskDue">
+                                <span class="due-label-icon">🕐</span>
+                                Scadenza <span class="due-optional">(opzionale)</span>
+                            </label>
+                            <div class="due-inputs">
+                                <!-- Input data -->
+                                <div class="input-wrapper due-date-wrapper">
+                                    <span class="input-icon">📅</span>
+                                    <input
+                                        type="date"
+                                        class="form-input due-input"
+                                        id="newTaskDate"
+                                        aria-label="Data scadenza"
+                                    >
+                                </div>
+                                <!-- Input ora -->
+                                <div class="input-wrapper due-time-wrapper">
+                                    <span class="input-icon">🕐</span>
+                                    <input
+                                        type="time"
+                                        class="form-input due-input"
+                                        id="newTaskTime"
+                                        aria-label="Ora scadenza"
+                                    >
+                                </div>
+                                <!-- Bottone svuota -->
+                                <button class="btn-clear-due" id="clearDueBtn"
+                                        onclick="clearDueInputs()"
+                                        title="Rimuovi scadenza"
+                                        aria-label="Rimuovi scadenza">
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <span class="field-error" id="newTaskError"></span>
+                </div>
+            </section>
+
+            <!-- ============================================
+                 SEZIONE: STATISTICHE
+            ============================================= -->
+            <section class="stats-section" aria-label="Statistiche">
+                <div class="stats-grid">
+                    <div class="stat-card" id="statTotal">
+                        <div class="stat-number" id="statTotalNum">0</div>
+                        <div class="stat-name">Totale</div>
+                    </div>
+                    <div class="stat-card highlight" id="statPending">
+                        <div class="stat-number" id="statPendingNum">0</div>
+                        <div class="stat-name">Da fare</div>
+                    </div>
+                    <div class="stat-card success" id="statDone">
+                        <div class="stat-number" id="statDoneNum">0</div>
+                        <div class="stat-name">Completati</div>
+                    </div>
+                    <!-- Barra di progresso -->
+                    <div class="stat-card progress-card">
+                        <div class="progress-label">Progresso</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <div class="progress-percent" id="progressPercent">0%</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================
+                 SEZIONE: FILTRI
+            ============================================= -->
+            <section class="filters-section" aria-label="Filtri">
+                <div class="filters-row">
+                    <!-- Bottoni filtro -->
+                    <div class="filter-buttons" role="group" aria-label="Filtra task">
+                        <button class="filter-btn" data-filter="today"
+                                onclick="setFilter('today')"
+                                title="Task in scadenza oggi">
+                            📅 Oggi
+                        </button>
+                        <button class="filter-btn active" data-filter="all"
+                                onclick="setFilter('all')">
+                            Tutti
+                        </button>
+                        <button class="filter-btn" data-filter="pending"
+                                onclick="setFilter('pending')">
+                            Da fare
+                        </button>
+                        <button class="filter-btn" data-filter="completed"
+                                onclick="setFilter('completed')">
+                            Completati
+                        </button>
+                        <button class="filter-btn" data-filter="overdue"
+                                onclick="setFilter('overdue')"
+                                title="Task con scadenza passata non ancora completati">
+                            Scaduti
+                        </button>
+                        
+                    </div>
+
+                    <!-- Azioni bulk -->
+                    <div class="bulk-actions">
+                        <button class="btn-ghost small" onclick="handleClearCompleted()"
+                                title="Elimina tutti i task completati">
+                            🗑️ Pulisci completati
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Barra di ricerca -->
+                <div class="search-row">
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔍</span>
+                        <input
+                            type="search"
+                            class="form-input search-input"
+                            id="searchInput"
+                            placeholder="Cerca nei task..."
+                            oninput="handleSearch()"
+                            aria-label="Cerca task"
+                        >
+                    </div>
+                </div>
+            </section>
+
+            <!-- ============================================
+                 SEZIONE: LISTA TASK
+            ============================================= -->
+            <section class="tasks-section" aria-label="Lista task">
+
+                <!-- Messaggio di caricamento -->
+                <div class="loading-state" id="loadingState" aria-live="polite">
+                    <div class="spinner"></div>
+                    <p>Caricamento task...</p>
+                </div>
+
+                <!-- Messaggio lista vuota -->
+                <div class="empty-state hidden" id="emptyState">
+                    <div class="empty-icon">📋</div>
+                    <h3 class="empty-title">Nessun task</h3>
+                    <p class="empty-desc" id="emptyDesc">
+                        Aggiungi il tuo primo task sopra!
+                    </p>
+                </div>
+
+                <!-- Lista task (drag-and-drop con HTML5 API) -->
+                <ul class="task-list" id="taskList"
+                    role="list"
+                    aria-label="Lista dei tuoi task"
+                    ondragover="onDragOver(event)"
+                    ondrop="onDrop(event)">
+                    <!-- I task vengono inseriti qui dinamicamente da script.js -->
+                </ul>
+
+                <!-- Hint drag-and-drop -->
+                <p class="dnd-hint" id="dndHint" aria-hidden="true">
+                    ↕ Trascina i task per riordinarli
+                </p>
+
+            </section>
+
+        </div><!-- fine dashboard-container -->
+    </main>
+
+    <!-- =====================================================
+         MODAL DI MODIFICA TASK (con data/ora scadenza)
+    ====================================================== -->
+    <div class="modal-overlay" id="editModal" role="dialog"
+         aria-modal="true" aria-labelledby="editModalTitle"
+         onclick="closeEditModal(event)">
+        <div class="modal-card modal-card-wide">
+            <div class="modal-icon">✎</div>
+            <h3 class="modal-title" id="editModalTitle">Modifica Task</h3>
+
+            <!-- Campo testo -->
+            <div class="form-group" style="text-align:left; margin-top:16px;">
+                <label class="form-label" for="editTaskText">Testo del task</label>
+                <div class="input-wrapper">
+                    <span class="input-icon">✏️</span>
+                    <input type="text" class="form-input" id="editTaskText"
+                           maxlength="500" placeholder="Descrizione del task...">
+                </div>
+                <span class="field-error" id="editTaskError"></span>
+            </div>
+
+            <!-- Campo data/ora scadenza -->
+            <div class="form-group" style="text-align:left;">
+                <label class="form-label">
+                    <span>🕐</span> Scadenza
+                    <span class="due-optional">(opzionale — lascia vuoto per rimuovere)</span>
+                </label>
+                <div class="due-inputs">
+                    <div class="input-wrapper due-date-wrapper">
+                        <span class="input-icon">📅</span>
+                        <input type="date" class="form-input due-input"
+                               id="editTaskDate" aria-label="Data scadenza">
+                    </div>
+                    <div class="input-wrapper due-time-wrapper">
+                        <span class="input-icon">🕐</span>
+                        <input type="time" class="form-input due-input"
+                               id="editTaskTime" aria-label="Ora scadenza">
+                    </div>
+                    <button class="btn-clear-due" onclick="clearEditDueInputs()"
+                            title="Rimuovi scadenza" aria-label="Rimuovi scadenza">✕</button>
+                </div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:8px;">
+                <button class="btn-ghost" onclick="closeEditModal()">Annulla</button>
+                <button class="btn-primary" id="confirmEditBtn"
+                        style="width:auto; padding:10px 24px; margin-top:0;">
+                    <span class="btn-text">Salva</span>
+                    <span class="btn-loader" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         MODAL DI CONFERMA ELIMINAZIONE
+    ====================================================== -->
+    <div class="modal-overlay" id="deleteModal" role="dialog"
+         aria-modal="true" aria-labelledby="modalTitle"
+         onclick="closeDeleteModal(event)">
+        <div class="modal-card">
+            <div class="modal-icon">🗑️</div>
+            <h3 class="modal-title" id="modalTitle">Elimina task</h3>
+            <p class="modal-desc">Sei sicuro di voler eliminare questo task? L'azione è irreversibile.</p>
+            <div class="modal-actions">
+                <button class="btn-ghost" onclick="closeDeleteModal()">Annulla</button>
+                <button class="btn-danger" id="confirmDeleteBtn">Elimina</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =====================================================
+         TOAST NOTIFICHE (in basso a destra)
+    ====================================================== -->
+    <div class="toast-container" id="toastContainer" aria-live="polite" aria-atomic="true">
+        <!-- I toast vengono aggiunti dinamicamente da script.js -->
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // ======================================================
+        // Inizializzazione dashboard al caricamento della pagina
+        // ======================================================
+
+        // Inizializza il tema
+        initTheme();
+
+        // Controlla che l'utente sia loggato, poi carica i task
+        initDashboard();
+
+        // Chiudi il menu utente cliccando fuori
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('userMenu');
+            if (menu && !menu.contains(e.target)) {
+                const dropdown = document.getElementById('userDropdown');
+                if (dropdown) dropdown.classList.remove('open');
+                const btn = document.getElementById('userBtn');
+                if (btn) btn.setAttribute('aria-expanded', 'false');
+            }
+        });
+
+        // Aggiungi task con il tasto Invio
+        document.getElementById('newTaskInput').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') handleAddTask();
+        });
+
+        // Aggiorna contatore caratteri input task
+        document.getElementById('newTaskInput').addEventListener('input', function() {
+            const count = this.value.length;
+            document.getElementById('taskCharCount').textContent = count + '/500';
+            if (count > 450) {
+                document.getElementById('taskCharCount').classList.add('warning');
+            } else {
+                document.getElementById('taskCharCount').classList.remove('warning');
+            }
+        });
+
+        // Chiudi modal con tasto Escape
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDeleteModal();
+                closeEditModal();
+            }
+        });
+
+        // Salva modifica con Invio nel modal di edit (campo testo)
+        document.getElementById('editTaskText').addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                const btn = document.getElementById('confirmEditBtn');
+                if (btn && btn.onclick) btn.onclick();
+            }
+        });
+    </script>
+</body>
+</html>
